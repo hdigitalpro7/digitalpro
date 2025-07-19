@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HDigital Pro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #000);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .floating-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: url('https://www.transparenttextures.com/patterns/stardust.png');
+      opacity: 0.04;
+      pointer-events: none;
+      animation: flicker 6s infinite alternate;
+    }
+    @keyframes flicker {
+      0% { opacity: 0.02; }
+      100% { opacity: 0.06; }
+    }
+    .top-header {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cfefff;
+      font-size: 14px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .social-icon {
+      color: #00e0ff;
+      transition: 0.3s ease;
+      font-size: 14px;
+    }
+    .social-icon:hover {
+      color: #ffffff;
+      text-shadow: 0 0 6px #00e0ff;
+    }
+    .whatsapp-btn {
+      background: #25d366;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+    .whatsapp-btn:hover {
+      background: #1ebe5d;
+      box-shadow: 0 0 10px rgba(37, 211, 102, 0.5);
+    }
+    .navbar-holo {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+      border-radius: 20px;
+      z-index: 999;
+      padding: 12px 24px;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 12px;
+      width: 100%;
+    }
+    .logo-orbit {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-orbit::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 35px;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border: 2px dashed rgba(0, 255, 255, 0.4);
+      border-radius: 50%;
+      animation: orbit 4s linear infinite;
+      z-index: -1;
+    }
+    @keyframes orbit {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .logo-orbit img {
+      height: 70px;
+    }
+    .logo-orbit span {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00e0ff, #6c63ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+    .nav-link {
+      color: #fff;
+      font-weight: 500;
+      position: relative;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: 0.4s ease;
+    }
+    .nav-link::before {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: linear-gradient(to right, #00e0ff, #6c63ff);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::before {
+      width: 100%;
+    }
+    .nav-link:hover {
+      color: #00f0ff;
+    }
+    .btn-holo {
+      background: linear-gradient(135deg, #6c63ff, #00e0ff);
+      border: none;
+      padding: 8px 24px;
+      font-weight: 600;
+      border-radius: 40px;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(0, 208, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    .btn-holo:hover {
+      background: linear-gradient(135deg, #00e0ff, #6c63ff);
+      box-shadow: 0 0 25px rgba(0, 208, 255, 0.6);
+      transform: scale(1.05);
+    }
+    .menu-toggle {
+      background: transparent;
+      border: none;
+      color: #00e0ff;
+      font-size: 22px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .menu-toggle:hover {
+      color: #ffffff;
+      text-shadow: 0 0 6px #00e0ff;
+    }
+    @media(max-width: 991px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 12px;
+        width: 100%;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+    }
+    /* Banner Responsive Padding */
+    @media(max-width: 768px) {
+      .banner {
+        padding-top: 270px !important;
+      }
+    }
+    /* video banner */
+     .banner-fix {
+  margin-top: 160px;
+  min-height: 50vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
+
+/* Gradient text */
+.banner-title {
+  font-size: 3rem;
+  background: linear-gradient(to right, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.banner-subtitle {
+  font-size: 1.1rem;
+  color: #ddd;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 🔽 Mobile Adjustments */
+@media (max-width: 768px) {
+  .banner-fix {
+    margin-top: 500px;
+    min-height: 30vh;
+    padding: 40px 20px;
+  }
+
+  .banner-title {
+    font-size: 2rem;
+  }
+
+  .banner-subtitle {
+    font-size: 1rem;
+  }
+
+  .btn-holo {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+}
+/* about */
+ .about-us {
+  background: linear-gradient(145deg, #0f172a, #000);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.about-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #00e0ff, #6c63ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ccc;
+}
+
+.about-img-wrapper {
+  position: relative;
+  max-width: 100%;
+}
+
+.glow-img {
+  max-width: 100%;
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.glow-border {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(0, 208, 255, 0.4);
+  border-radius: 25px;
+  filter: blur(8px);
+  animation: pulseGlow 3s infinite ease-in-out;
+  z-index: 1;
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.counter {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 2rem;
+  }
+  .about-text {
+    font-size: 1rem;
+  }
+}
+/* sevice */
+ .service-card {
+    background: linear-gradient(145deg, #1f1f1f, #2a2a2a);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+  }
+
+  .service-card .icon i {
+    color: #00d9ff;
+  }
+/* wye choose */
+
+.why-dark-card {
+  background: #1e1e1e;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.05);
+  transition: 0.4s ease;
+}
+.why-dark-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(139, 106, 255, 0.3);
+}
+.orbit-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: orbitSpin 5s linear infinite;
+}
+@keyframes orbitSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* reviwes */
+.testimonial-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    box-shadow: 0 0 25px rgba(106, 255, 255, 0.4);
+    transition: transform 0.3s ease;
+  }
+
+  .testimonial-card:hover img {
+    transform: scale(1.1);
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 12px;
+  }
+   </style>
+</head>
+<body>
+  <div class="floating-bg"></div>
+
+  <!-- Top Header -->
+  <div class="top-header d-none d-md-block">
+    <div class="container d-flex justify-content-between align-items-center py-2 px-2 flex-wrap">
+      <div class="d-flex align-items-center gap-4 flex-wrap">
+        <span><i class="fas fa-envelope text-info me-2"></i> hdigitalpro7@gmail.com</span>
+        <span><i class="fas fa-phone text-success me-2"></i> +91 79738 92569</span>
+        <span><i class="fas fa-clock text-warning me-2"></i> Mon–Sat: 9AM–6PM</span>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="https://www.facebook.com/share/1B2QLkQcet/" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/hdigitalpro?igsh=bWkwczQxMzBsNTgw" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="https://wa.me/+91 79738 92569" target="_blank" class="social-icon">
+        <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <div class="navbar-holo">
+    <div class="nav-container">
+      <div class="logo-orbit">
+        <img src="imges/adlogo.png" alt="HD Logo">
+        <span>HDigital Pro</span>
+      </div>
+      <div class="nav-links d-none d-lg-flex flex-grow-1 justify-content-center" id="navMenu">
+        <a href="home.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About-us</a>
+        <a href="service.html" class="nav-link">Services</a>
+        <a href="offer.html" class="nav-link">Offer</a>
+        <a href="aitools.html" class="nav-link">AI Tools</a>
+        <a href="wyechoose.html" class="nav-link">Wye choose</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="chaitai.html" class="btn btn-holo d-none d-lg-inline-block">Let’s Talk</a>
+        <button class="menu-toggle d-lg-none" onclick="toggleMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+    <div class="nav-links d-lg-none mt-3 px-2" id="navMenuMobile">
+      <a href="home.html" class="nav-link">Home</a>
+      <a href="service.html" class="nav-link">Services</a>
+      <a href="offer.html" class="nav-link">Offer</a>
+      <a href="aitools.html" class="nav-link">AI Tools</a>
+      <a href="wyechoose.html" class="nav-link">Wye choose </a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="chaitai.html" class="btn btn-holo mt-2">Let’s Talk</a>
+    </div>
+  </div><br> <br>
+<br> <br><br> <br>
+<!-- 🚀 Service Page Banner -->
+<section class="py-5 text-white about-us">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-4 mb-4 mb-lg-0 text-center">
+        <img src="imges/har.jpg" class="img-fluid rounded-circle border border-info p-2" alt="Armaandeep Singh" style="width: 200px;">
+      </div>
+      <div class="col-lg-8">
+        <h3 class="text-gradient">Armaandeep Singh</h3>
+        <p class="about-text">Owner & Creative Head - HDigital Pro</p>
+       <p class="about-text">
+  Delivering the best in web design, branding, business promotion, and AI-driven digital solutions.
+</p>
+
+      <!-- Contact Now Button with WhatsApp -->
+<a href="https://wa.me/+917973892569" target="_blank" class="btn btn-holo mt-3 d-inline-flex align-items-center">
+  <i class="fab fa-whatsapp me-2"></i> Contact Now
+</a>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 🚀 Our Services Section -->
+<section id="services" class="py-5 text-white" style="background: linear-gradient(135deg, #0a0a0a, #1a1a1a);">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4 text-gradient">Our Best Services</h2>
+    <p class="lead mb-5">We provide modern web design, branding, business promotion, and AI-powered solutions to elevate your digital presence.</p>
+
+    <div class="row g-4">
+      <!-- Service 1 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-globe fa-2x mb-3 text-info"></i>
+          <h5 class="fw-bold mb-2">Website Design</h5>
+          <p class="small">Modern, responsive, and user-focused websites built to impress.</p>
+        </div>
+      </div>
+
+      <!-- Service 2 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-bullhorn fa-2x mb-3 text-warning"></i>
+          <h5 class="fw-bold mb-2">Business Promotion</h5>
+          <p class="small">Get noticed with smart digital promotion strategies tailored to your brand.</p>
+        </div>
+      </div>
+
+      <!-- Service 3 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-brain fa-2x mb-3 text-success"></i>
+          <h5 class="fw-bold mb-2">AI-Powered Solutions</h5>
+          <p class="small">Smart tools and automations powered by artificial intelligence.</p>
+        </div>
+      </div>
+
+      <!-- Service 4 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-pen-nib fa-2x mb-3 text-danger"></i>
+          <h5 class="fw-bold mb-2">Brand Design</h5>
+          <p class="small">Logos, visuals, and identities that give your brand a powerful voice.</p>
+        </div>
+      </div>
+
+      <!-- More Services -->
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-mobile-alt fa-2x mb-3 text-primary"></i>
+          <h5 class="fw-bold mb-2">App UI Design</h5>
+          <p class="small">Beautiful, intuitive interfaces for your mobile applications.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-search fa-2x mb-3 text-light"></i>
+          <h5 class="fw-bold mb-2">SEO Optimization</h5>
+          <p class="small">Improve your search engine ranking and drive more traffic.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-palette fa-2x mb-3 text-warning"></i>
+          <h5 class="fw-bold mb-2">Graphic Design</h5>
+          <p class="small">Creative designs for your brochures, posters, and ads.</p>
+        </div>
+      </div>
+
+
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-video fa-2x mb-3 text-danger"></i>
+          <h5 class="fw-bold mb-2">Promo Videos</h5>
+          <p class="small">Engaging promotional videos for your services or brand.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-comments fa-2x mb-3 text-info"></i>
+          <h5 class="fw-bold mb-2">Social Media Marketing</h5>
+          <p class="small">Boost your brand with targeted social media campaigns.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-code fa-2x mb-3 text-secondary"></i>
+          <h5 class="fw-bold mb-2">Custom Development</h5>
+          <p class="small">Tailored software or app solutions for your unique needs.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="p-4 border border-secondary rounded-4 h-100 bg-dark bg-opacity-50">
+          <i class="fas fa-shopping-cart fa-2x mb-3 text-warning"></i>
+          <h5 class="fw-bold mb-2">E-commerce Solutions</h5>
+          <p class="small">Launch your online store with full shopping and payment features.</p>
+        </div>
+      </div>
+
+      <!-- Add more cards similarly up to 20 or more -->
+    </div>
+
+     <!-- 🔗 Social Media Buttons -->
+    <div class="mt-4">
+      <p class="mb-2">Follow us & subscribe for updates</p>
+      <a href="https://wa.me/+917973892569" target="_blank" class="btn btn-outline-light btn-sm rounded-circle me-2">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+      <a href="https://www.facebook.com/share/1B2QLkQcet/" target="_blank" class="btn btn-outline-light btn-sm rounded-circle me-2">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="https://www.instagram.com/hdigitalpro?igsh=bWkwczQxMzBsNTgw" target="_blank" class="btn btn-outline-light btn-sm rounded-circle me-2">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://www.youtube.com/@yourchannel" target="_blank" class="btn btn-outline-light btn-sm rounded-circle">
+        <i class="fab fa-youtube"></i>
+      </a>
+    </div>
+  </div>
+</section>
+<style>
+    .btn-outline-light.rounded-circle {
+  transition: all 0.3s ease;
+  border: 2px solid #fff;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.btn-outline-light.rounded-circle:hover {
+  background: #fff;
+  color: #000;
+  transform: scale(1.1);
+}
+
+.btn-outline-light.rounded-circle .fab {
+  transition: color 0.3s ease;
+}
+
+/* Custom hover colors for each platform */
+.btn-outline-light[href*="wa.me"]:hover {
+  background-color: #25D366;
+  color: #fff;
+}
+
+.btn-outline-light[href*="facebook"]:hover {
+  background-color: #3b5998;
+  color: #fff;
+}
+
+.btn-outline-light[href*="instagram"]:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #fff;
+}
+
+.btn-outline-light[href*="youtube"]:hover {
+  background-color: #FF0000;
+  color: #fff;
+}
+
+</style>
+
+
+<!-- 🌌 Modern Creative Footer -->
+<footer class="pt-5 pb-4 text-white position-relative" style="background: linear-gradient(to right, #050505, #101010); overflow: hidden;">
+  <div class="container">
+    <div class="row gy-5">
+      <!-- Logo & Description -->
+      <div class="col-md-6 col-lg-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="imges/adlogo.png" alt="HDigital Pro" height="50">
+          <h5 class="fw-bold mb-0 text-gradient">HDigital Pro</h5>
+        </div>
+        <p class="text-white-100">Crafting next-gen digital solutions with AI, design, and innovation. Let's shape your success story together.</p>
+        <div class="d-flex gap-3 mt-3">
+          <a href="#" class="text-info fs-5"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-danger fs-5"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-primary fs-5"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="text-success fs-5"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+<div class="col-md-6 col-lg-2">
+  <h6 class="fw-bold mb-3 text-gradient">Quick Links</h6>
+  <ul class="list-unstyled">
+    <li><a href="home.html" class="text-white text-decoration-none d-block mb-2">Home</a></li>
+    <li><a href="about.html" class="text-white text-decoration-none d-block mb-2">About Us</a></li>
+    <li><a href="service.html" class="text-white text-decoration-none d-block mb-2">Services</a></li>
+    <li><a href="contact.html" class="text-white text-decoration-none d-block mb-2">Contact</a></li>
+  </ul>
+</div>
+
+<!-- Services -->
+<div class="col-md-6 col-lg-3">
+  <h6 class="fw-bold mb-3 text-gradient">Our Services</h6>
+  <ul class="list-unstyled">
+    <li><a href="service.html" class="text-white text-decoration-none d-block mb-2">Website Development</a></li>
+    <li><a href="service.html" class="text-white text-decoration-none d-block mb-2">Logo Design</a></li>
+    <li><a href="service.html" class="text-white text-decoration-none d-block mb-2">Business Promotion</a></li>
+    <li><a href="service.html" class="text-white text-decoration-none d-block mb-2">AI Tools</a></li>
+  </ul>
+</div>
+
+
+      <!-- Contact Info -->
+      <div class="col-md-6 col-lg-3">
+        <h6 class="fw-bold mb-3 text-gradient">Contact Us</h6>
+         <p class="text-white-100 mb-2"><i class="fas fa-envelope me-2 text-info"></i> hdigitalpro7@gmail.com</p>
+        <p class="text-white-100 mb-2"><i class="fas fa-phone me-2 text-success"></i> +91 79738 92569</p>
+        <p class="text-white-100"><i class="fas fa-map-marker-alt me-2 text-warning"></i> Goraya, Punjab, India</p>
+      </div>
+    </div>
+
+    <hr class="border-light my-4">
+
+    <div class="text-center">
+      <p class="mb-0 text-white-100">&copy; 2025 <strong>HDigital Pro</strong>. All rights reserved. Powered with ❤️ by Armaandeep Singh.</p>
+    </div>
+  </div>
+
+  <!-- Floating Stars Background -->
+  <div class="floating-bg"></div>
+</footer>
+
+<!-- Footer Styles -->
+<style>
+  footer .text-gradient {
+    background: linear-gradient(to right, #00e0ff, #6c63ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .floating-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png'); /* Change if needed */
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  footer > .container, footer hr, footer .text-center {
+    position: relative;
+    z-index: 1;
+  }
+</style>
+
+<script>
+  const counters = document.querySelectorAll('.counter');
+  let started = false;
+
+  function animateCounters() {
+    if (!started && isInViewport(document.getElementById("stats"))) {
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / 100;
+        let count = 0;
+        const updateCount = () => {
+          if (count < target) {
+            count += increment;
+            counter.textContent = Math.ceil(count);
+            setTimeout(updateCount, 20);
+          } else {
+            counter.textContent = target;
+          }
+        };
+        updateCount();
+      });
+      started = true;
+    }
+  }
+
+  function isInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom >= 0;
+  }
+
+  window.addEventListener('scroll', animateCounters);
+</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function toggleMenu() {
+      document.getElementById("navMenuMobile").classList.toggle("active");
+    }
+  </script>
+</body>
+</html>
