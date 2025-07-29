@@ -230,12 +230,13 @@
 @media (max-width: 768px) {
   .banner-fix {
     margin-top: 100px;
-    min-height: 30vh;
+    min-height: 20vh;
     padding: 40px 20px;
   }
 
   .banner-title {
     font-size: 2rem;
+    margin-top: -180px;
   }
 
   .banner-subtitle {
@@ -400,39 +401,191 @@
     </div>
   </div>
 
-  <!-- Navbar -->
-  <div class="navbar-holo">
-    <div class="nav-container">
-      <div class="logo-orbit">
-        <img src="imges/adlogo.png" alt="HD Logo">
-        <span>HDigital Pro</span>
-      </div>
-      <div class="nav-links d-none d-lg-flex flex-grow-1 justify-content-center" id="navMenu">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="about.html" class="nav-link">About-us</a>
-        <a href="service.html" class="nav-link">Services</a>
-        <a href="offer.html" class="nav-link">Offer</a>
-        <a href="aitools.html" class="nav-link">AI Tools</a>
-        <a href="wyechoose.html" class="nav-link">Wye choose</a>
-        <a href="contact.html" class="nav-link">Contact</a>
-      </div>
-      <div class="d-flex align-items-center gap-2">
-        <a href="chaitai.html" class="btn btn-holo d-none d-lg-inline-block">Let’s Talk</a>
-        <button class="menu-toggle d-lg-none" onclick="toggleMenu()">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
+<!-- Navbar -->
+<div class="navbar-holo">
+  <div class="nav-container">
+    <div class="logo-orbit">
+      <img src="imges/logo hd-modified.png" alt="HD Logo">
+      <span>HDigital Pro</span>
     </div>
-    <div class="nav-links d-lg-none mt-3 px-2" id="navMenuMobile">
+
+    <div class="nav-links d-none d-lg-flex flex-grow-1 justify-content-center" id="navMenu">
       <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About-us</a>
       <a href="service.html" class="nav-link">Services</a>
       <a href="offer.html" class="nav-link">Offer</a>
       <a href="aitools.html" class="nav-link">AI Tools</a>
-      <a href="wyechoose.html" class="nav-link">Wye choose </a>
+      <a href="wyechoose.html" class="nav-link">Wye choose</a>
       <a href="contact.html" class="nav-link">Contact</a>
-      <a href="chaitai.html" class="btn btn-holo mt-2">Let’s Talk</a>
+    </div>
+
+    <!-- Right Side Buttons -->
+    <div class="d-flex align-items-center gap-2">
+      <a href="chaitai.html" class="btn btn-holo d-none d-lg-inline-block">Let’s Talk</a>
+      <button id="micBtn" onclick="runVoiceAssistant()" title="Voice Command"
+        class="btn btn-outline-light rounded-circle shadow-sm px-2 py-1">
+        <i class="fas fa-microphone"></i>
+      </button>
+      <button class="menu-toggle d-lg-none" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
   </div>
+
+  <div class="nav-links d-lg-none mt-3 px-2" id="navMenuMobile">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="about.html" class="nav-link">About-us</a>
+    <a href="service.html" class="nav-link">Services</a>
+    <a href="offer.html" class="nav-link">Offer</a>
+    <a href="aitools.html" class="nav-link">AI Tools</a>
+    <a href="wyechoose.html" class="nav-link">Wye choose </a>
+    <a href="contact.html" class="nav-link">Contact</a>
+    <a href="chaitai.html" class="btn btn-holo mt-2">Let’s Talk</a>
+  </div>
+</div>
+
+<!-- Voice Assistant Script -->
+<script>
+  let recognition;
+  let micOn = false;
+  let selectedVoice = null;
+
+  function playStartupSound() {
+    const audio = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_ef33dfe5f6.mp3");
+    audio.play();
+  }
+
+  function setupVoice() {
+    const synth = window.speechSynthesis;
+    const voices = synth.getVoices();
+    selectedVoice = voices.find(voice =>
+      voice.name.toLowerCase().includes("male") ||
+      voice.name.includes("Google UK English Male") ||
+      voice.name.includes("Microsoft David") ||
+      voice.name.includes("Daniel")
+    ) || voices[0];
+  }
+  window.speechSynthesis.onvoiceschanged = setupVoice;
+
+  function speak(text, callback) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (selectedVoice) utterance.voice = selectedVoice;
+    utterance.pitch = 0.85;
+    utterance.rate = 0.93;
+    utterance.volume = 1;
+    utterance.onend = () => {
+      if (callback) callback();
+    };
+    speechSynthesis.speak(utterance);
+  }
+
+  function getJarvisGreeting() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return "Good morning sir, I am JARVIS. How may I assist you today?";
+    if (hour >= 12 && hour < 17) return "Good afternoon sir, I am JARVIS. How may I assist you today?";
+    if (hour >= 17 && hour < 21) return "Good evening sir, I am JARVIS. How may I assist you today?";
+    return "Hello sir, I am JARVIS. How may I assist you today?";
+  }
+
+  function runVoiceAssistant() {
+    if (micOn) {
+      stopRecognition();
+      return;
+    }
+
+    const micIcon = document.querySelector('#micBtn i');
+    micOn = true;
+
+    playStartupSound();
+
+    const greeting = getJarvisGreeting();
+    speak(greeting, () => {
+      micIcon.style.color = "limegreen";
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Voice recognition not supported.");
+        micIcon.style.color = "";
+        micOn = false;
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = true;
+
+      recognition.onresult = (event) => {
+        const command = event.results[event.resultIndex][0].transcript.toLowerCase();
+        console.log("Command:", command);
+
+        // Navigation
+        if (command.includes("home")) speak("Opening home page.", () => window.location.href = "index.html");
+        else if (command.includes("about")) speak("Opening about us.", () => window.location.href = "about.html");
+        else if (command.includes("services")) speak("Accessing services.", () => window.location.href = "service.html");
+        else if (command.includes("offer")) speak("Opening offers section.", () => window.location.href = "offer.html");
+        else if (command.includes("ai tools")) speak("Opening AI tools.", () => window.location.href = "aitools.html");
+        else if (command.includes("why choose") || command.includes("wye choose")) speak("Opening why choose us section.", () => window.location.href = "wyechoose.html");
+        else if (command.includes("contact")) speak("Opening contact page.", () => window.location.href = "contact.html");
+
+        // Chat
+        else if (command.includes("how are you")) speak("I’m operating perfectly sir. Thank you for asking.");
+        else if (command.includes("what are you doing")) speak("Just analyzing some data and waiting for your command.");
+        else if (command.includes("favorite actor jarvis")) speak("That would be Tony Stark, sir. Robert Downey Junior.");
+        else if (command.includes("who are you")) speak("I am JARVIS. Your personal assistant.");
+        else if (command.includes("hello") || command.includes("hi jarvis")) speak("Hello sir. Good to hear from you.");
+        else if (command.includes("thank you") || command.includes("thanks")) speak("You're welcome sir.");
+        else if (command.includes("good night")) speak("Good night sir. I’ll be on standby.");
+        else if (command.includes("shut down") || command.includes("stop listening")) {
+          speak("Shutting down voice interface. Goodbye sir.", stopRecognition);
+        }
+
+        // Social Media Commands
+        else if (command.includes("open youtube")) {
+          speak("Opening your YouTube channel.", () => {
+            window.open("https://youtube.com/@hdigitalpro?si=Ez80_vgUhmac00pI", "_blank");
+          });
+        }
+        else if (command.includes("open whatsapp")) {
+          speak("Opening WhatsApp chat.", () => {
+            window.open("https://wa.me/+917973892569", "_blank");
+          });
+        }
+        else if (command.includes("open instagram")) {
+          speak("Opening your Instagram profile.", () => {
+            window.open("https://www.instagram.com/hdigitalpro?igsh=bWkwczQxMzBsNTgw", "_blank");
+          });
+        }
+        else if (command.includes("open facebook")) {
+          speak("Opening your Facebook page.", () => {
+            window.open("https://www.facebook.com/share/1B2QLkQcet/", "_blank");
+          });
+        }
+
+        else {
+          speak("Sorry sir, I didn’t understand that.");
+        }
+      };
+
+      recognition.onend = () => {
+        if (micOn) recognition.start();
+        else micIcon.style.color = "";
+      };
+
+      recognition.start();
+    });
+  }
+
+  function stopRecognition() {
+    if (recognition) {
+      recognition.stop();
+      micOn = false;
+      document.querySelector('#micBtn i').style.color = "";
+    }
+  }
+</script>
+
+
+
 <!-- hero banner -->
 <section class="banner banner-fix position-relative text-center text-white">
   <!-- 🔹 Background Video -->
@@ -481,7 +634,7 @@
       <!-- Right Side Image -->
       <div class="col-lg-6 text-center" data-aos="fade-left">
         <div class="about-img-wrapper position-relative">
-          <img src="imges/har.jpg" alt="HDigital About" class="img-fluid rounded-4 shadow-lg glow-img">
+          <img src="imges/har.png" alt="HDigital About" class="img-fluid rounded-4 shadow-lg glow-img">
           <div class="glow-border"></div>
         </div>
       </div>
@@ -788,15 +941,15 @@
       <!-- Logo & Description -->
       <div class="col-md-6 col-lg-4">
         <div class="d-flex align-items-center gap-3 mb-3">
-          <img src="imges/adlogo.png" alt="HDigital Pro" height="50">
+          <img src="imges/logo hd-modified.png" alt="HDigital Pro" height="50">
           <h5 class="fw-bold mb-0 text-gradient">HDigital Pro</h5>
         </div>
         <p class="text-white-100">Crafting next-gen digital solutions with AI, design, and innovation. Let's shape your success story together.</p>
         <div class="d-flex gap-3 mt-3">
-          <a href="#" class="text-info fs-5"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="text-danger fs-5"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="text-primary fs-5"><i class="fab fa-linkedin-in"></i></a>
-          <a href="#" class="text-success fs-5"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://www.facebook.com/share/1B2QLkQcet/" class="text-info fs-5"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/hdigitalpro?igsh=bWkwczQxMzBsNTgw" class="text-danger fs-5"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/+917973892569" class="text-primary fs-5"><i class="fab fa-whatsapp" style="color: green;"></i></a>
+          <a href="https://youtube.com/@hdigitalpro?si=Ez80_vgUhmac00pI" class="text-success fs-5"><i class="fab fa-youtube" style="color: red;"></i></a>
         </div>
       </div>
 
