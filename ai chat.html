@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HDigital Pro Service Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0e0e0e;
+    }
+    .chatbot-container {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 350px;
+      background: #0f0f0f; color: white;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+      display: flex; flex-direction: column;
+      z-index: 9999;
+    }
+    .chatbot-header {
+      background: linear-gradient(45deg, #00d4ff, #090979);
+      padding: 15px; font-weight: bold;
+      font-size: 16px; text-align: center;
+    }
+    .chatbot-welcome {
+      background: #1e1e1e; color: #00d4ff;
+      text-align: center; padding: 10px;
+      font-size: 14px; font-weight: bold;
+      border-bottom: 1px solid #333;
+    }
+    .chatbot-messages {
+      flex: 1; padding: 15px;
+      max-height: 300px; overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    .message {
+      margin: 8px 0; padding: 10px 15px;
+      border-radius: 12px; max-width: 85%;
+      word-wrap: break-word;
+    }
+    .message.bot {
+      background: #1e1e1e; align-self: flex-start;
+    }
+    .message.user {
+      background: #00d4ff; color: #000;
+      align-self: flex-end;
+    }
+    .chatbot-input-area {
+      display: flex;
+      border-top: 1px solid #333;
+    }
+    .chatbot-input-area input {
+      flex: 1; padding: 12px;
+      border: none; outline: none;
+      background: #111; color: white;
+    }
+    .chatbot-input-area button {
+      background: #00d4ff; color: black;
+      border: none; padding: 12px 20px;
+      cursor: pointer; font-weight: bold;
+    }
+    .chatbot-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chatbot-messages::-webkit-scrollbar-thumb {
+      background: #00d4ff; border-radius: 10px;
+    }
+    #micBtn {
+      background: #111;
+      color: #00d4ff;
+      border: none;
+      padding: 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chatbot-container" id="chatbot">
+  <div class="chatbot-header">🤖 HDigital Pro AI Assistant</div>
+  <div class="chatbot-welcome">Welcome to <strong>HDigital Pro</strong> – Empowering Your Brand with AI!</div>
+
+  <div class="chatbot-messages" id="messages"></div>
+
+  <div class="chatbot-input-area">
+    <input type="text" id="userInput" placeholder="Type here..." onkeydown="handleKey(event)">
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="toggleMic()" id="micBtn">🎤 Mic</button>
+  </div>
+</div>
+
+<script>
+  let step = "welcome";
+  let selectedService = "";
+  let userDetails = { name: "", email: "", phone: "", address: "" };
+  const services = [
+    "Website Design", "Logo Design", "Google Ads",
+    "Video Editing", "Visiting Card Design", "Business Promotion",
+    "Social Media Management", "Banner Design", "Graphic Design", "AI Services"
+  ];
+
+  function initChat() {
+    appendMessage("Hello! 👋 Please select a service below:", "bot");
+    showServiceOptions();
+  }
+
+  function showServiceOptions() {
+    services.forEach(service => appendMessage(`👉 ${service}`, "bot"));
+    step = "service-selection";
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter") sendMessage();
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage(text, "user");
+    input.value = "";
+
+    if (step === "service-selection") {
+      const match = services.find(s => s.toLowerCase() === text.toLowerCase());
+      if (match) {
+        selectedService = match;
+        appendMessage(`✅ Great! You selected: ${match}`, "bot");
+        step = "ask-name";
+        askNextDetail("name");
+      } else {
+        appendMessage("❌ Please select a valid service from the list.", "bot");
+        showServiceOptions();
+      }
+    } else if (step === "ask-name") {
+      userDetails.name = text;
+      step = "ask-email";
+      askNextDetail("email");
+    } else if (step === "ask-email") {
+      userDetails.email = text;
+      step = "ask-phone";
+      askNextDetail("phone");
+    } else if (step === "ask-phone") {
+      userDetails.phone = text;
+      step = "ask-address";
+      askNextDetail("address");
+    } else if (step === "ask-address") {
+      userDetails.address = text;
+      step = "confirm";
+      showSummary();
+    } else if (step === "confirm") {
+      if (text.toLowerCase() === "yes") {
+        sendToWhatsApp();
+      } else {
+        appendMessage("❌ Cancelled. Restarting...", "bot");
+        step = "welcome";
+        setTimeout(() => {
+          document.getElementById("messages").innerHTML = "";
+          initChat();
+        }, 1000);
+      }
+    }
+  }
+
+  function askNextDetail(field) {
+    const prompts = {
+      name: "📛 Please enter your full name:",
+      email: "📧 Enter your email address:",
+      phone: "📱 Enter your phone number:",
+      address: "🏠 Enter your full address:"
+    };
+    appendMessage(prompts[field], "bot");
+  }
+
+  function showSummary() {
+    const summary = `
+📝 Please confirm your details:
+Service: ${selectedService}
+Name: ${userDetails.name}
+Email: ${userDetails.email}
+Phone: ${userDetails.phone}
+Address: ${userDetails.address}
+
+✔️ Type "yes" to confirm or "no" to cancel.
+    `;
+    appendMessage(summary, "bot");
+  }
+
+  function appendMessage(text, type) {
+    const msgBox = document.getElementById("messages");
+    const msg = document.createElement("div");
+    msg.className = `message ${type}`;
+    msg.innerText = text;
+    msgBox.appendChild(msg);
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  function sendToWhatsApp() {
+    const phoneNumber = "917973892569"; // ✅ WhatsApp number without +
+    const message = `New Service Request from HDigital Pro Chatbot:\n\nService: ${selectedService}\nName: ${userDetails.name}\nEmail: ${userDetails.email}\nPhone: ${userDetails.phone}\nAddress: ${userDetails.address}`;
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    appendMessage("✅ Opening WhatsApp to send details...", "bot");
+    setTimeout(() => window.open(url, "_blank"), 1000);
+  }
+
+  // 🔊 Voice Recognition Logic – Auto Type + Auto Send + Loop
+  let recognition;
+  let isListening = false;
+
+  function toggleMic() {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("Voice recognition not supported in this browser.");
+      return;
+    }
+
+    if (!recognition) {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = "en-US"; // "hi-IN" for Hindi
+      recognition.interimResults = false;
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.trim();
+        document.getElementById("userInput").value = transcript;
+        sendMessage(); // auto-send on every voice input
+
+        // Keep listening for next input
+        setTimeout(() => recognition.start(), 500);
+      };
+
+      recognition.onerror = function(event) {
+        console.error("Speech recognition error", event);
+      };
+
+      recognition.onend = function() {
+        if (isListening) recognition.start();
+        else document.getElementById("micBtn").innerText = "🎤 Mic";
+      };
+    }
+
+    if (!isListening) {
+      recognition.start();
+      isListening = true;
+      document.getElementById("micBtn").innerText = "🔴 Listening...";
+    } else {
+      recognition.stop();
+      isListening = false;
+      document.getElementById("micBtn").innerText = "🎤 Mic";
+    }
+  }
+
+  // 🟢 Start Chat
+  initChat();
+</script>
+
+</body>
+</html>
